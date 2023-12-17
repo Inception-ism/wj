@@ -12,7 +12,7 @@ import Home from '@/components/Home'
 import Display from '@/components/Display'
 import TempDisplay from '@/components/TempDisplay'
 import ThankYou from '@/components/ThankYou'
-
+import analysis from '@/components/analysis'
 Vue.use(Router)
 
 export default new Router({
@@ -64,6 +64,11 @@ export default new Router({
       path: '/thankyou',
       name: 'ThankYou',
       component: ThankYou
+    },
+    {
+      path: '/analysis',
+      name: 'analysis',
+      component: analysis
     },
   ]
 })

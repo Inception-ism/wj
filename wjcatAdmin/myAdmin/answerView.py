@@ -31,6 +31,10 @@ def opera(request):
                 response=getTempInfo(info,request)
             elif opera_type=='submit_wj':#提交问卷
                 response=submitWj(info,request)
+            elif opera_type=='get_answer':#查询提交答案:
+                response=getAnswer(info,request)
+            elif opera_type=='get_answer_with_option':#查询提交答案
+                response=getAnswerWithOption(info,request)
             else:
                 response['code'] = '-7'
                 response['msg'] = '请求类型有误'
@@ -159,6 +163,7 @@ def submitWj(info,request):
             res = Wj.objects.get(id=wjId)  # 查询id为wjId
             response['title'] = res.title
             response['desc'] = res.desc
+            response['wjId'] = wjId
         except:
             response['code'] = '-10'
             response['msg'] = '问卷不存在'
@@ -175,6 +180,7 @@ def submitWj(info,request):
             submitIp=ip,
             useTime=useTime
         )
+        response['submitId']=submitInfo.id
         qItems=Question.objects.filter(wjId=wjId,must=True)#查询所有必填题目
         musts=[]
         for qItem in qItems:
@@ -228,6 +234,94 @@ def submitWj(info,request):
                     type=item['type'],
                     answerText=item['textValue']
                 )
+            
+    else:
+        response['code'] = '-3'
+        response['msg'] = '确少必要参数'
+
+    return response
+
+############################################################
+#功能：查询提交答案
+#最后更新：2019-06-08
+############################################################
+def getAnswer(info,request):
+    response = {'code': 0, 'msg': 'success'}
+    wjId = info.get('wjId')
+    submitId=info.get('submitId')
+    if wjId and submitId:
+        try:  # 判断问卷id是否存在
+            res = Wj.objects.get(id=wjId)  # 查询id为wjId
+            response['title'] = res.title
+            response['desc'] = res.desc
+            response['wjId'] = wjId
+        except:
+            response['code'] = '-10'
+            response['msg'] = '问卷不存在'
+            return response
+        if res.status==0:#当问卷状态为1(已发布)时才可回答
+            response['code'] = '-10'
+            response['msg'] = '问卷尚未发布'
+            return response
+
+        #记录答案
+        answerItems=Answer.objects.filter(wjId=wjId,submitId=submitId)
+        detail=[]
+        for item in answerItems:
+            temp={}
+            temp['questionId']=item.questionId
+            temp['type']=item.type
+            temp['answer']=item.answer
+            temp['answerText']=item.answerText
+            detail.append(temp)
+        response['detail']=detail
+    else:
+        response['code'] = '-3'
+        response['msg'] = '确少必要参数'
+
+    return response
+
+############################################################
+#功能：answer表右联合options表查询 
+#最后更新：2019-06-08
+############################################################
+def getAnswerWithOption(info,request):
+    response = {'code': 0, 'msg': 'success'}
+    wjId = info.get('wjId')
+    submitId=info.get('submitId')
+    if wjId and submitId:
+        try:  # 判断问卷id是否存在
+            res = Wj.objects.get(id=wjId)  # 查询id为wjId
+            response['title'] = res.title
+            response['desc'] = res.desc
+            response['wjId'] = wjId
+        except:
+            response['code'] = '-10'
+            response['msg'] = '问卷不存在'
+            return response
+        if res.status==0:#当问卷状态为1(已发布)时才可回答
+            response['code'] = '-10'
+            response['msg'] = '问卷尚未发布'
+            return response
+
+        #记录答案
+        answerItems=Answer.objects.filter(wjId=wjId,submitId=submitId)
+        detail=[]
+        for item in answerItems:
+            temp={}
+            temp['questionId']=item.questionId
+            temp['type']=item.type
+            temp['answer']=item.answer
+            temp['answerText']=item.answerText
+            if item.type in ['radio','checkbox']:
+                temp['options']=[]
+                optionItems=Options.objects.filter(questionId=item.questionId)
+                for optionItem in optionItems:
+                    temp['options'].append({'title':optionItem.title,'id':optionItem.id})
+                    if item.answer==optionItem.id:
+                        temp['answerTitle']=optionItem.title
+            detail.append(temp)
+        response['detail']=detail
     else:
         response['code'] = '-3'
         response['msg'] = '确少必要参数'

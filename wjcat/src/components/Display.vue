@@ -128,12 +128,13 @@
           detail:this.detail
         })
           .then(data=>{
-            console.log(data);
+            console.log(data,"nmsl");
             if(data.code==0){
               //提交成功
               this.submitLoading=false;
               this.submitText='提交';
-              this.$router.push({path:'/thankyou'});//跳到欢迎页
+              //router跳转添加参数
+              this.$router.push({name:'analysis', query:{wjId:wjId,submitId:data.submitId}});
             }
             else{
               this.submitLoading=false;
