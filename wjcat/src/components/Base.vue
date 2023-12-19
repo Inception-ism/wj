@@ -7,9 +7,7 @@
     <el-container>
       <el-header>
         <div class="logo" @click="toIndex">
-          <img src="/static/images/logo.png" class="logoImg">
-          <span style="color: #303133">问卷喵</span>
-          <span style="font-size: 13px;margin-left: 5px;color: #606266">——免费的在线问卷调查系统</span>
+          <span style="font-size: 13px;margin-left: 5px;color: #606266">心理测评系统</span>
         </div>
         <div style="float: right;margin-right: 50px;line-height: 60px;">
           <!-- 未登录时显示 -->

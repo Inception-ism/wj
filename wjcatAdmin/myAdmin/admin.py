@@ -5,8 +5,6 @@
 from django.contrib import admin
 from .models import *
 
-admin.site.site_header = '问卷喵管理后台'
-admin.site.site_title = '问卷喵调查网'
 
 #用户列表注册
 @admin.register(User)
