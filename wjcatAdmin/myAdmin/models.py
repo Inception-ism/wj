@@ -36,6 +36,7 @@ class Question(models.Model):
 class Options(models.Model):
     questionId = models.IntegerField(verbose_name='关联题目id')
     title=models.CharField(max_length=100,verbose_name='选项名')
+    score=models.IntegerField(verbose_name='选项分数')
 
 #提交信息表
 class Submit(models.Model):
@@ -53,25 +54,18 @@ class Answer(models.Model):
     answer=models.IntegerField(verbose_name='答案',blank=True, null=True)
     answerText = models.TextField(verbose_name='文本答案', blank=True, null=True)
 
-
-
-
-#模板库问卷表
-class TempWj(models.Model):
-    title=models.CharField(max_length=50,verbose_name='问卷标题')
-    username=models.CharField(max_length=20,verbose_name='创建人')#关联用户名
-    desc=models.TextField(verbose_name='问卷说明',null=True)#问卷描述 在问卷头部展示
-
-
-#模板库问题表
-class TempQuestion(models.Model):
-    title=models.CharField(max_length=100,verbose_name='题目标题')
-    type=models.CharField(max_length=20,verbose_name='题目类型')
-    wjId=models.IntegerField(verbose_name='关联问卷id')
-    row=models.IntegerField(verbose_name='行数',null=True)#如果为填空题 此字段为文本输入框的行数
-    must=models.BooleanField(verbose_name='是否必填')#是否必填
-
-#模板库选项表
-class TempOptions(models.Model):
-    questionId = models.IntegerField(verbose_name='关联题目id')
-    title=models.CharField(max_length=100,verbose_name='选项名')
+class SCLanalysis(models.Model):
+    wjId = models.IntegerField(verbose_name='关联问卷Id')
+    submitId=models.IntegerField(verbose_name='关联提交id')
+    totalScore=models.IntegerField(verbose_name='总分')
+    totalAvgScore=models.FloatField(verbose_name='均分')
+    positiveItem=models.IntegerField(verbose_name='阳性项目数')
+    Somatization=models.FloatField(verbose_name='躯体化')
+    ObsessiveCompulsive=models.FloatField(verbose_name='强迫症状')
+    interpersonalSensibility=models.FloatField(verbose_name='人际敏感')
+    depression=models.FloatField(verbose_name='抑郁')
+    anxiety=models.FloatField(verbose_name='焦虑')
+    angerHostility=models.FloatField(verbose_name='敌对')
+    phobicAnxiety=models.FloatField(verbose_name='恐怖')
+    paranoidIdeation=models.FloatField(verbose_name='偏执')
+    Psychoticism=models.FloatField(verbose_name='精神病性')

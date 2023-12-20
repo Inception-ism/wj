@@ -48,10 +48,7 @@ def opera(request):
     return HttpResponse(json.dumps(response))
 
 
-############################################################
-#功能：获取问卷信息
-#最后更新：2019-05-24
-############################################################
+
 def getInfo(info,request):
     response = {'code': 0, 'msg': 'success'}
     wjId=info.get('wjId')
@@ -141,10 +138,13 @@ def getTempInfo(info,request):
 
 
 
-############################################################
-#功能：提交问卷
-#最后更新：2019-06-08
-############################################################
+def getOptionScore(optionId):
+    try:
+        option = Options.objects.get(id=optionId)
+        return option.score
+    except Options.DoesNotExist:
+        return None
+
 @transaction.atomic
 def submitWj(info,request):
     response = {'code': 0, 'msg': 'success'}
@@ -185,9 +185,30 @@ def submitWj(info,request):
         musts=[]
         for qItem in qItems:
             musts.append(qItem.id)#记录所有必填题目的题目id
+        totalScore = 0
+        avgScore = 0.0
+        positiveItem = 0
+        Somatization = 0.0
+        SomatizationList = [1,4,12,27,40,42,48,49,52,53,56,58]
+        ObsessiveCompulsive=0.0
+        ObsessiveCompulsiveList = [3,9,10,28,38,45,46,51,55,65]
+        interpersonalSensibility=0.0
+        interpersonalSensibilityList= [6,21,34,36,37,41,61,69,73]
+        depression = 0.0
+        depressionList = [5,14,15,20,22,26,29,30,31,32,54,71,79]
+        anxiety = 0.0
+        anxietyList=[2,17,23,33,39,57,72,78,80,86]
+        angerHostility=0.0
+        angerHostilityList=[11,24,63,67,74,81]
+        phobicAnxiety=0.0
+        phobicAnxietyList=[13,25,47,50,70,75,82]
+        paranoidIdeation=0.0
+        paranoidIdeationList=[8,18,43,68,76,83]
+        Psychoticism=0.0
+        PsychoticismList=[7,16,35,62,77,84,85,87,88,90]
+        additionalItems=0.0
         #记录答案
         for item in detail:
-            # print(item)
             if item['type']=='radio':#单选题
                 if item['id'] in musts and item['radioValue']==-1:#此必填选项未填 回滚
                     print('开始回滚')
@@ -196,13 +217,38 @@ def submitWj(info,request):
                     response['code'] = '-11'
                     response['msg'] = '有必答题目未回答'
                     break
+                questionId = item['id']
                 Answer.objects.create(
-                    questionId=item['id'],
+                    questionId=questionId,
                     submitId=submitInfo.id,
                     wjId=wjId,
                     type=item['type'],
                     answer=item['radioValue']
                 )
+                if wjId =="1":
+                    value  = item['radioValue']
+                    score = getOptionScore(value)
+                    if questionId in SomatizationList:
+                        Somatization += score
+                    elif questionId in ObsessiveCompulsiveList:
+                        ObsessiveCompulsive += score
+                    elif questionId in interpersonalSensibilityList:
+                        interpersonalSensibility += score
+                    elif questionId in depressionList:
+                        depression += score
+                    elif questionId in anxietyList:
+                        anxiety += score
+                    elif questionId in angerHostilityList:
+                        angerHostility += score
+                    elif questionId in phobicAnxietyList:
+                        phobicAnxiety += score
+                    elif questionId in paranoidIdeationList:
+                        paranoidIdeation += score
+                    elif questionId in PsychoticismList:
+                        Psychoticism += score
+                    totalScore += score
+                    if score > 2:
+                        positiveItem += 1
             elif item['type']=='checkbox':#多选题
                 if item['id'] in musts and len(item['checkboxValue'])==0:#此必填选项未填 回滚
                     print('开始回滚')
@@ -234,7 +280,35 @@ def submitWj(info,request):
                     type=item['type'],
                     answerText=item['textValue']
                 )
-            
+        print("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", 
+              Somatization, ObsessiveCompulsive,interpersonalSensibility,
+              depression, anxiety)
+        avgScore = totalScore / 90
+        Somatization /= 12    
+        ObsessiveCompulsive /= 10
+        interpersonalSensibility /= 9
+        depression /= 13
+        anxiety /= 10
+        angerHostility /= 6
+        phobicAnxiety /= 7
+        paranoidIdeation /= 6
+        Psychoticism /= 10
+        SCLanalysis.objects.create(
+            wjId=wjId,
+            submitId = submitInfo.id,
+            totalScore = totalScore,
+            totalAvgScore = avgScore,
+            positiveItem = positiveItem,
+            Somatization=Somatization,
+            ObsessiveCompulsive = ObsessiveCompulsive,
+            interpersonalSensibility = interpersonalSensibility,
+            depression = depression,
+            anxiety = anxiety,
+            angerHostility = angerHostility,
+            phobicAnxiety = phobicAnxiety,
+            paranoidIdeation = paranoidIdeation,
+            Psychoticism = Psychoticism,
+        )
     else:
         response['code'] = '-3'
         response['msg'] = '确少必要参数'

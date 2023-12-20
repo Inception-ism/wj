@@ -7,6 +7,7 @@
     <el-row>
       <el-col :span="6">
         <!--操作栏-->
+
         <div class="opera">
           <el-tooltip class="item" effect="dark" content="编辑问卷" placement="bottom">
             <el-button icon="el-icon-edit" type="text" class="rightButton" @click="editWj" :disabled="nowSelect.id==0||nowSelect.id==null"></el-button>
@@ -56,12 +57,6 @@
               <div class="content">
                 <div v-show="nowSelect.id==0||nowSelect.id==null">请先选择问卷</div>
                 <design ref="design" v-show="nowSelect.id!=0&&nowSelect.id!=null"></design>
-              </div>
-            </el-tab-pane>
-            <el-tab-pane label="回答统计" name="hdtj">
-              <div class="content" ref="pdf">
-                <div v-show="nowSelect.id==0||nowSelect.id==null">请先选择问卷</div>
-                <data-show ref="dataShow" v-show="nowSelect.id!=0&&nowSelect.id!=null"></data-show>
               </div>
             </el-tab-pane>
           </el-tabs>
