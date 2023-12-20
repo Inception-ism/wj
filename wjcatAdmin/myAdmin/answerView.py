@@ -280,9 +280,6 @@ def submitWj(info,request):
                     type=item['type'],
                     answerText=item['textValue']
                 )
-        print("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", 
-              Somatization, ObsessiveCompulsive,interpersonalSensibility,
-              depression, anxiety)
         avgScore = totalScore / 90
         Somatization /= 12    
         ObsessiveCompulsive /= 10
@@ -315,10 +312,6 @@ def submitWj(info,request):
 
     return response
 
-############################################################
-#功能：查询提交答案
-#最后更新：2019-06-08
-############################################################
 def getAnswer(info,request):
     response = {'code': 0, 'msg': 'success'}
     wjId = info.get('wjId')
@@ -355,10 +348,7 @@ def getAnswer(info,request):
 
     return response
 
-############################################################
-#功能：answer表右联合options表查询 
-#最后更新：2019-06-08
-############################################################
+
 def getAnswerWithOption(info,request):
     response = {'code': 0, 'msg': 'success'}
     wjId = info.get('wjId')
@@ -396,6 +386,48 @@ def getAnswerWithOption(info,request):
                         temp['answerTitle']=optionItem.title
             detail.append(temp)
         response['detail']=detail
+    else:
+        response['code'] = '-3'
+        response['msg'] = '确少必要参数'
+
+    return response
+
+def getSclAnswer(info, request):
+    response = {'code': 0, 'msg': 'success'}
+    wjId = info.get('wjId')
+    submitId=info.get('submitId')
+    if wjId and submitId:
+        try:  # 判断问卷id是否存在
+            res = Wj.objects.get(id=wjId)  # 查询id为wjId
+            response['title'] = res.title
+            response['desc'] = res.desc
+            response['wjId'] = wjId
+        except:
+            response['code'] = '-10'
+            response['msg'] = '问卷不存在'
+            return response
+        if res.status==0:#当问卷状态为1(已发布)时才可回答
+            response['code'] = '-10'
+            response['msg'] = '问卷尚未发布'
+            return response
+        analysis = SCLanalysis.objects.filter(wjId=wjId, submitId=submitId)
+        analysis_data = {
+            "wjId": analysis.wjId,
+            "submitId": analysis.submitId,
+            "totalScore": analysis.totalScore,
+            "totalAvgScore": analysis.totalAvgScore,
+            "positiveItem": analysis.positiveItem,
+            "Somatization": analysis.Somatization,
+            "ObsessiveCompulsive": analysis.ObsessiveCompulsive,
+            "interpersonalSensibility": analysis.interpersonalSensibility,
+            "depression": analysis.depression,
+            "anxiety": analysis.anxiety,
+            "angerHostility": analysis.angerHostility,
+            "phobicAnxiety": analysis.phobicAnxiety,
+            "paranoidIdeation": analysis.paranoidIdeation,
+            "Psychoticism": analysis.Psychoticism
+        }
+        response['detail'] = analysis_data
     else:
         response['code'] = '-3'
         response['msg'] = '确少必要参数'
