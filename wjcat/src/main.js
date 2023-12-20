@@ -9,6 +9,7 @@ import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 import VueClipboard from "vue-clipboard2";
 import md5 from "./md5";
+import "tailwindcss/tailwind.css"
 
 Vue.use(VueClipboard);
 Vue.use(ElementUI);
