@@ -9,10 +9,7 @@ from django.db import transaction
 import datetime
 
 
-############################################################
-#功能：问卷回答者操作主入口
-#最后更新：2019-05-24
-############################################################
+
 def opera(request):
     response={'code':0,'msg':'success'}
     if request.method=='POST':
@@ -35,6 +32,8 @@ def opera(request):
                 response=getAnswer(info,request)
             elif opera_type=='get_answer_with_option':#查询提交答案
                 response=getAnswerWithOption(info,request)
+            elif opera_type=='get_sclanswer':
+                response=getSclAnswer(info, request)
             else:
                 response['code'] = '-7'
                 response['msg'] = '请求类型有误'
@@ -94,10 +93,7 @@ def getInfo(info,request):
 
 
 
-############################################################
-#功能：获取模板问卷信息
-#最后更新：2019-06-16
-############################################################
+
 def getTempInfo(info,request):
     response = {'code': 0, 'msg': 'success'}
     wjId=info.get('wjId')
@@ -410,10 +406,8 @@ def getSclAnswer(info, request):
             response['code'] = '-10'
             response['msg'] = '问卷尚未发布'
             return response
-        analysis = SCLanalysis.objects.filter(wjId=wjId, submitId=submitId)
+        analysis = SCLanalysis.objects.get(wjId=wjId, submitId=submitId)
         analysis_data = {
-            "wjId": analysis.wjId,
-            "submitId": analysis.submitId,
             "totalScore": analysis.totalScore,
             "totalAvgScore": analysis.totalAvgScore,
             "positiveItem": analysis.positiveItem,

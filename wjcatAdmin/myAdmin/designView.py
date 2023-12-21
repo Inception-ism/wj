@@ -8,10 +8,7 @@ from io import BytesIO
 import base64
 
 
-############################################################
-#功能：问卷设计者操作主入口
-#最后更新：2019-05-23
-############################################################
+
 def opera(request):
     response={'code':0,'msg':'success'}
     if request.method=='POST':
@@ -96,11 +93,7 @@ def loginCheck(request):
 
 
 
-############################################################
-#功能：添加问卷/更新问卷
-#最后更新：2019-05-23
-#备注：当传入id(问卷id)为空时：添加问卷  不为空时：更新问卷
-############################################################
+
 def addWj(info,username):
     response = {'code': 0, 'msg': 'success'}
     title = info.get('title')#问卷标题
@@ -131,10 +124,7 @@ def addWj(info,username):
 
 
 
-############################################################
-#功能：获取问卷列表
-#最后更新：2019-05-27
-############################################################
+
 def getWjList(info,username):
     response = {'code': 0, 'msg': 'success'}
     if username:
@@ -155,10 +145,7 @@ def getWjList(info,username):
     return response
 
 
-############################################################
-#功能：获取模板库问卷列表
-#最后更新：2019-06-16
-############################################################
+
 def getTempWjList(info,username):
     response = {'code': 0, 'msg': 'success'}
     page = info.get('page',1)  # 问卷标题
@@ -185,10 +172,7 @@ def getTempWjList(info,username):
 
 
 
-############################################################
-#功能：删除问卷
-#最后更新：2019-05-23
-############################################################
+
 def deleteWj(info,username):
     response = {'code': 0, 'msg': 'success'}
     id = info.get('id')#问卷id
@@ -213,10 +197,7 @@ def deleteWj(info,username):
 
 
 
-############################################################
-#功能：获取问题列表
-#最后更新：2019-05-27
-############################################################
+
 def getQuestionList(info,username):
     response = {'code': 0, 'msg': 'success'}
     wjId=info.get('wjId')#wjid
@@ -256,12 +237,7 @@ def getQuestionList(info,username):
 
 
 
-############################################################
-#功能：添加问题/更新问题
-#最后更新：2019-05-23
-#备注：当传入questionId(问题id)为空时：添加问题  不为空时：更新问题
-############################################################
-#事务处理  当一次插入选项过多时（测试10个选项要5秒以上）很费时间 增加事务处理可大大加快速度（改进后20个选项3秒插入完成）
+
 @transaction.atomic
 def addQuestion(info,username):
     response = {'code': 0, 'msg': 'success'}
@@ -316,10 +292,7 @@ def addQuestion(info,username):
     return response
 
 
-############################################################
-#功能：删除问题
-#最后更新：2019-05-23
-############################################################
+
 @transaction.atomic
 def deleteQuestion(info,username):
     response = {'code': 0, 'msg': 'success'}
@@ -344,10 +317,7 @@ def deleteQuestion(info,username):
 
 
 
-############################################################
-#功能：发布问卷
-#最后更新：2019-05-24
-############################################################
+
 def pushWj(info,username):
     response = {'code': 0, 'msg': 'success'}
     wjId=info.get('wjId')
@@ -369,10 +339,7 @@ def pushWj(info,username):
 
 
 
-############################################################
-#功能：登录
-#最后更新：2019-05-28
-############################################################
+
 def login(info,request):
     response = {'code': 0, 'msg': 'success'}
     username = info.get('username')  #用户名
@@ -399,10 +366,7 @@ def login(info,request):
         response['msg'] = '确少必要参数'
     return response
 
-############################################################
-#功能：退出登录
-#最后更新：2019-05-28
-############################################################
+
 def exit(request):
     response = {'code': 0, 'msg': 'success'}
     # 对django_session中的用户名执行删除操作
@@ -419,10 +383,7 @@ def exit(request):
 
 
 
-############################################################
-#功能：注册
-#最后更新：2019-05-29
-############################################################
+
 def register(info):
     response = {'code': 0, 'msg': 'success'}
     t_username = info.get('username') #用户名
@@ -443,10 +404,7 @@ def register(info):
         response['msg'] = '确少必要参数'
     return response
 
-############################################################
-#功能：重置密码
-#最后更新：2019-05-28
-############################################################
+
 def resetpass(info):
     response = {'code': 0, 'msg': 'success'}
     username = info.get('username') #用户名
@@ -471,10 +429,7 @@ def resetpass(info):
     return response
 
 
-############################################################
-#功能：数据分析
-#最后更新：2019-05-28
-############################################################
+
 def dataAnalysis(info):
     response = {'code': 0, 'msg': 'success'}
     try:
@@ -584,11 +539,7 @@ def getTextAnswerDetail(info):
 
 
 
-############################################################
-#功能：添加模板（临时）
-#说明：根据wjId，将现有的问卷添加到模板库
-#最后更新：2019-06-16
-############################################################
+
 def addTemp(info,username):
     response = {'code': 0, 'msg': 'success'}
     wjId=info.get('wjId')
@@ -631,11 +582,7 @@ def addTemp(info,username):
 
 
 
-############################################################
-#功能：使用模板
-#说明：根据模板wjId，将模板库问卷添加到用户问卷
-#最后更新：2019-06-16
-############################################################
+
 def useTemp(info,username):
     response = {'code': 0, 'msg': 'success'}
     wjId=info.get('wjId')
